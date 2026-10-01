@@ -31,6 +31,9 @@ describe('user migration plugin', () => {
         updateAccountInformationPage.confirmAccountInformation();
 
         keycloak.assertIsLoggedInAsLegacyUser();
+        keycloak.signOutViaUIAndClearCache();
+        keycloak.signInAsLegacyUser();
+        keycloak.assertIsLoggedInAsLegacyUser();
     });
 
     it('should reset password after inputting wrong credentials', () => {
@@ -53,8 +56,10 @@ describe('user migration plugin', () => {
 
     function resetPasswordViaEmail() {
         resetPasswordEmail.visitResetPasswordPage();
-        resetPasswordPage.chooseNewPassword(data.legacyUser.simplePassword)
         updateAccountInformationPage.confirmAccountInformation();
+        resetPasswordPage.chooseNewPassword(data.legacyUser.simplePassword);
+        cy.contains('Your account has been updated.').should('be.visible');
+        keycloak.signInAsLegacyUser();
     }
 
     it('should reset password before user is migrated', () => {
@@ -69,8 +74,8 @@ describe('user migration plugin', () => {
         addSpecialCharactersPasswordPolicy();
 
         keycloak.signInAsLegacyUser();
-        updatePasswordPage.chooseNewPassword(data.legacyUser.passwordWhichMeetsPolicy);
         updateAccountInformationPage.confirmAccountInformation();
+        updatePasswordPage.chooseNewPassword(data.legacyUser.passwordWhichMeetsPolicy);
 
         keycloak.assertIsLoggedInAsUser(data.legacyUser.firstName, data.legacyUser.lastName);
     });

@@ -4,9 +4,9 @@ const data = require("../data");
 class Keycloak {
 
     elements = {
-        userDropdown: () => cy.get('#user-dropdown'),
+        userDropdown: () => cy.getByTestId('options-toggle'),
         accountDropdown: () => cy.getByTestId('options-toggle'),
-        signOutButton: () => cy.get('#sign-out')
+        signOutButton: () => cy.get('button').contains('Sign out')
     }
 
     signInAsAdmin() {

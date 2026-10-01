@@ -13,9 +13,14 @@ class PasswordPoliciesPage {
     }
 
     visit() {
+        cy.intercept('GET', '/admin/realms/master').as('getPasswordPolicies');
         cy.visit('/admin/master/console/#/master/authentication/policies');
-        cy.get(REMOVE_PASSWORD_POLICY_BTN_SELECTOR + "," + NO_POLICY_SELECTOR)
-            .should('be.visible');
+        cy.wait('@getPasswordPolicies').then(({ response }) => {
+            const selector = response.body.passwordPolicy
+                ? REMOVE_PASSWORD_POLICY_BTN_SELECTOR
+                : NO_POLICY_SELECTOR;
+            cy.get(selector).should('be.visible');
+        });
     }
 
     deleteEveryPasswordPolicy() {

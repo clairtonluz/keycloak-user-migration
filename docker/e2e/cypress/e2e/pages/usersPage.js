@@ -15,10 +15,8 @@ class UsersPage {
     }
 
     visit() {
-        cy.intercept('admin/realms/master/ui-ext/brute-force-user*')
-            .as("userList")
         cy.visit('/admin/master/console/#/master/users');
-        cy.wait('@userList');
+        this.elements.searchUserInput().should('be.visible');
     }
 
     goToUserDetails(userName) {

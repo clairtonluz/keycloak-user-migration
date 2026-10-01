@@ -24,7 +24,11 @@ class UserFederationPage {
     }
 
     visit() {
-        cy.intercept('/admin/realms/master/components*&type=org.keycloak.storage.UserStorageProvider*')
+        cy.intercept({
+            method: 'GET',
+            pathname: /^\/admin\/realms\/master\/components\/?$/,
+            query: { type: 'org.keycloak.storage.UserStorageProvider' }
+        })
             .as("getUserStorageProviders")
         cy.visit('/admin/master/console/#/master/user-federation');
         cy.wait('@getUserStorageProviders');
@@ -48,7 +52,7 @@ class UserFederationPage {
 
             cy.intercept('DELETE', 'admin/realms/master/components/*')
                 .as("deleteComponent");
-            cy.intercept('GET', 'admin/realms/master/components*')
+            cy.intercept({ method: 'GET', pathname: /^\/admin\/realms\/master\/components\/?$/ })
                 .as("refreshComponents");
             this.elements.modalConfirmButton().click({force: true});
             cy.wait("@deleteComponent")

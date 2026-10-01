@@ -22,6 +22,7 @@ https://codesoapbox.dev/keycloak-user-migration
 
 | Keycloak Version | Version/Commit                                                                                                                                     |
 |------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| 26.7.5           | `6.2.5-SNAPSHOT` (local build)                                                                                                                       |
 | 26.X             | [6.0.0](https://github.com/daniel-frak/keycloak-user-migration/releases/tag/6.0.0)                                                                 |
 | 25.X             | [5.0.0](https://github.com/daniel-frak/keycloak-user-migration/releases/tag/5.0.0)                                                                 |
 | 24.X             | [4.0.0](https://github.com/daniel-frak/keycloak-user-migration/releases/tag/4.0.0)                                                                 |
