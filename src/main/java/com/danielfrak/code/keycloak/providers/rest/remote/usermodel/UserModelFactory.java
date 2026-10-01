@@ -78,7 +78,7 @@ public class UserModelFactory {
     }
 
     private void validateUsernamesEqual(LegacyUser legacyUser, UserModel userModel) {
-        if (!userModel.getUsername().equals(legacyUser.username())) {
+        if (!userModel.getUsername().equalsIgnoreCase(legacyUser.username())) {
             throw new IllegalStateException(String.format("Local and remote users differ: [%s != %s]",
                     userModel.getUsername(),
                     legacyUser.username()));
@@ -86,6 +86,7 @@ public class UserModelFactory {
     }
 
     public void updateUserAttributes(LegacyUser legacyUser, UserModel userModel) {
+        userModel.setUsername(legacyUser.username());
         userModel.setEnabled(legacyUser.isEnabled());
         userModel.setEmail(legacyUser.email());
         userModel.setEmailVerified(legacyUser.isEmailVerified());

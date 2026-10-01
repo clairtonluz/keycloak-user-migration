@@ -156,6 +156,26 @@ class LegacyProviderTest {
     }
 
     @Test
+    void shouldUpdateExistingUserDataWhenFoundByLegacyIdWithUsernameDifferingOnlyInCase() {
+        final String username = "user";
+        final LegacyUser legacyUser = withId();
+        when(legacyUserService.findByUsername(username))
+                .thenReturn(Optional.of(legacyUser));
+        when(userProvider.getUserByUsername(realmModel, legacyUser.username()))
+                .thenReturn(null);
+        when(userProvider.getUserById(realmModel, legacyUser.id()))
+                .thenReturn(userModel);
+        when(userModel.getUsername())
+                .thenReturn(legacyUser.username().toLowerCase());
+
+        var result = legacyProvider.getUserByUsername(realmModel, username);
+
+        assertEquals(userModel, result);
+        verify(userModelFactory).updateUserAttributes(legacyUser, userModel);
+        verify(userModelFactory, never()).create(any(), any());
+    }
+
+    @Test
     void shouldCreateUserWhenLegacyIdIsBlankAndNoLocalUserExists() {
         final String username = "user";
         final LegacyUser user = new LegacyUser(
@@ -218,7 +238,7 @@ class LegacyProviderTest {
     }
 
     @Test
-    void shouldReturnNullIfUserIdExistsButHasDifferentUsername() {
+    void shouldReturnExistingUserAndUpdateAttributesWhenUserIdExistsButHasDifferentUsername() {
         final String email = "email";
         final LegacyUser user = withId();
         when(legacyUserService.findByEmail(email))
@@ -230,12 +250,11 @@ class LegacyProviderTest {
                 .thenReturn("different");
         when(userProvider.getUserById(realmModel, user.id()))
                 .thenReturn(existingUser);
-        when(userModelFactory.isDuplicateUserId(user, realmModel))
-                .thenReturn(true);
 
         var result = legacyProvider.getUserByEmail(realmModel, email);
 
-        assertNull(result);
+        assertNotNull(result);
+        verify(userModelFactory).updateUserAttributes(user, existingUser);
         verify(userModelFactory, never()).create(any(), any());
     }
 

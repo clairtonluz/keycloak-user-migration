@@ -169,6 +169,18 @@ class UserModelFactoryTest {
         }
 
         @Test
+        void shouldNotThrowWhenKeycloakLowercasesTheUsername() {
+            final LegacyUser legacyUser = TestLegacyUser.minimal();
+            when(userProvider.addUser(realm, legacyUser.username()))
+                    .thenReturn(new TestUserModel(legacyUser.username().toLowerCase()));
+            userModelFactory = constructUserModelFactory();
+
+            UserModel result = userModelFactory.create(legacyUser, realm);
+
+            assertThat(result).isNotNull();
+        }
+
+        @Test
         void shouldMigrateBasicAttributes() {
             final LegacyUser legacyUser = TestLegacyUser.minimal();
             mockSuccessfulUserModelCreationWithoutIdMigration(legacyUser);
@@ -1241,6 +1253,30 @@ class UserModelFactoryTest {
 
     @Nested
     class UpdateUserAttributes {
+
+        @Test
+        void shouldUpdateUsernameOnExistingUser() {
+            var legacyUser = new LegacyUser(
+                    null,
+                    "newUsername",
+                    "email@example.com",
+                    "First",
+                    "Last",
+                    true, true,
+                    Map.of(),
+                    emptyList(),
+                    emptyList(),
+                    emptyList(),
+                    emptyList(),
+                    emptyList()
+            );
+            UserModel userModel = new TestUserModel("oldUsername");
+
+            userModelFactory = constructUserModelFactory();
+            userModelFactory.updateUserAttributes(legacyUser, userModel);
+
+            assertThat(userModel.getUsername()).isEqualTo("newUsername");
+        }
 
         @Test
         void shouldUpdateBasicAttributesOnExistingUser() {
